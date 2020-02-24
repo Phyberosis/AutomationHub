@@ -1,12 +1,41 @@
-﻿<Window x:Class="AutomationHub.MainWindow"
+﻿<Window x:Name="frmMain" x:Class="AutomationHub.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AutomationHub"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
+        Title="MainWindow" Height="600" Width="800" Background="#FF1D1D1D" Foreground="White" KeyDown="FrmMain_KeyDown" KeyUp="FrmMain_KeyUp" Closing="FrmMain_Closing">
+    <Grid x:Name="grdBackground">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Menu x:Name="mnuMain" Grid.Row="0" Background="#FF273244" Foreground="White">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Save"/>
+            </MenuItem>
+        </Menu>
+        <Grid x:Name="grdMain" Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition MinWidth="200" Width="200"/>
+                <ColumnDefinition MinWidth="400" Width="79*"/>
+                <ColumnDefinition Width="321*"/>
+                <ColumnDefinition MinWidth="200" Width="200"/>
+            </Grid.ColumnDefinitions>
+            <!--Left-->
+            <TreeView Background="#FF3E3E3E"/>
+            <!--Mid-->
+            <Canvas x:Name="cvsNode" Grid.Column="1" Background="#FF252525" Grid.ColumnSpan="2"/>
+            <!--Right-->
+            <Canvas x:Name="cvsRight" Grid.Column="3" Background="#FF3E3E3E" RenderTransformOrigin="0,0.5">
+                <Button x:Name="btnToggleRun" Content="Run" Grid.Column="3" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="172" Height="37" Foreground="White" Grid.ColumnSpan="3" Background="#FF4FA857"/>
+                <Button x:Name="btnToggleArmControl" Click="Click_Control" Content="Control" Grid.Column="3" HorizontalAlignment="Left" VerticalAlignment="Top" Width="172" Height="37" Foreground="White" Grid.ColumnSpan="3" Background="#FF4577CF" Canvas.Left="10" Canvas.Top="52"/>
+                <Button x:Name="btnAddKeyframe" Content="Add Keyframe" Grid.Column="3" HorizontalAlignment="Left" VerticalAlignment="Top" Width="172" Height="37" Foreground="White" Grid.ColumnSpan="3" Background="#FF4577CF" Canvas.Left="10" Canvas.Top="94"/>
+                <Label x:Name="lblArmPos" Content="Label" Grid.Column="3" HorizontalAlignment="Left" VerticalAlignment="Top" Width="172" Foreground="White" Grid.ColumnSpan="3" Canvas.Left="10" Canvas.Top="136"/>
+                <Label x:Name="lblArmDir" Content="Label" Grid.Column="3" HorizontalAlignment="Left" VerticalAlignment="Top" Width="172" Foreground="White" Grid.ColumnSpan="3" Canvas.Left="10" Canvas.Top="167"/>
+                <Label x:Name="lblMsg" Content="Label" HorizontalAlignment="Left" VerticalAlignment="Top" Width="172" Foreground="White" Canvas.Left="10" Canvas.Top="198"/>
+            </Canvas>
+        </Grid>
     </Grid>
 </Window>

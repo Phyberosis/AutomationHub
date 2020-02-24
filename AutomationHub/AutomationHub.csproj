@@ -37,6 +37,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -63,6 +64,16 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="arm\Arm.cs" />
+    <Compile Include="Angle.cs" />
+    <Compile Include="arm\ArmFactory.cs" />
+    <Compile Include="arm\ArmVectors.cs" />
+    <Compile Include="com\ICom.cs" />
+    <Compile Include="com\ComFactory.cs" />
+    <Compile Include="controller\Controller.cs" />
+    <Compile Include="com\ComUSB.cs" />
+    <Compile Include="controller\ControllerFactory.cs" />
+    <Compile Include="controller\ControllerKeyboard.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
