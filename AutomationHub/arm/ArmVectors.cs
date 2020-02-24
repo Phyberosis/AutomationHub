@@ -11,7 +11,6 @@ namespace AutomationHub.arm
     {
         public override void setPose(Vector3 position, Vector3 direction)
         {
-            //test
             data.position = position;
             data.direction = direction;
         }
