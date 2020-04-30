@@ -4,15 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using AutomationHub.com;
-
-namespace AutomationHub
+namespace AutomationData
 {
-    public class ComFactory
+    class Program
     {
-        public static ICom getDefaultCom()
+        static void Main(string[] args)
         {
-            return new ComUSB();
         }
     }
 }

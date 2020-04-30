@@ -1,4 +1,6 @@
-﻿using AutomationHub.arm;
+﻿using AHdata;
+using AHcoms;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,18 +10,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace AutomationHub.controller
+namespace AutomationHub.controllers
 {
     internal class ControllerKeyboard : Controller
     {
         private KeyProcessor kpPosDir, kpRaw;
-        public ControllerKeyboard(ICom com) : base(com)
+        public ControllerKeyboard(Com com) : base(com)
         {
             kpPosDir = new PosDirProcessor();
             kpRaw = new RawAnglesProcessor();
         }
 
-        protected override void step(float dt)
+        protected override bool step(ref ComData d, float dt)
         {
             KeyProcessor keyProcessor = keysToggle.Contains(Key.CapsLock)? kpRaw : kpPosDir;
 
@@ -27,9 +29,8 @@ namespace AutomationHub.controller
 
             lock (this)
             {
-                keyProcessor.updateArm(keysDown, keysToggle, arm, rate * dt);
+                return keyProcessor.getNextTarget(ref d, keysDown, keysToggle, pose, rate * dt);
             }
-            com.flushPose(arm.getData());
         }
 
         private abstract class KeyProcessor
@@ -37,15 +38,15 @@ namespace AutomationHub.controller
             protected const float CTrans = 1f;
             protected const float CRot = 0.25f;
 
-            public abstract void updateArm(Collection<Key> keysDown, Collection<Key> keysToggle, Arm arm, float dt);
+            public abstract bool getNextTarget(ref ComData d, Collection<Key> keysDown, Collection<Key> keysToggle, ArmPose pose, float stepAmount);
         }
 
         private class PosDirProcessor : KeyProcessor
         {
-            public override void updateArm(Collection<Key> keysDown, Collection<Key> keysToggle, Arm arm, float stepAmount)
+            public override bool getNextTarget(ref ComData d, Collection<Key> keysDown, Collection<Key> keysToggle, ArmPose pose, float stepAmount)
             {
                 Vector3 dPos = new Vector3();
-                Vector3 dDir = new Vector3();   // axis of rot
+                Vector3 dDir = new Vector3();   // just for storing dRotation angles
                 if (keysDown.Contains(Key.A))
                     dPos.X += -1;
                 if (keysDown.Contains(Key.D))
@@ -72,47 +73,52 @@ namespace AutomationHub.controller
                 if (keysDown.Contains(Key.OemPeriod))
                     dDir.Z += 1;
 
+                if (dPos == Vector3.Zero && dDir == Vector3.Zero)
+                    return false;
+
                 dPos = dPos.LengthSquared() !=0? Vector3.Normalize(dPos) * stepAmount * CTrans : dPos;
-                Vector3 pos = Vector3.Add(arm.getPosition(), dPos);
-
                 dDir = dDir.LengthSquared() !=0? Vector3.Normalize(dDir) * stepAmount * CRot : dDir;
-                Matrix4x4 rotX = Matrix4x4.CreateRotationX(dDir.X);
-                Matrix4x4 rotY = Matrix4x4.CreateRotationY(dDir.Y);
-                Matrix4x4 rotZ = Matrix4x4.CreateRotationZ(dDir.Z);
-                Vector3 dir = arm.getDirection();
-                dir = Vector3.Transform(dir, rotX);
-                dir = Vector3.Transform(dir, rotY);
-                dir = Vector3.Transform(dir, rotZ);
 
-                arm.setPose(pos, dir);
+                var dPose =  new ArmPose(dPos, dDir, dDir);
+                d = new ComData(new KeyFrame(dPose, stepAmount));
                 //Console.WriteLine(dDir.ToString());
+                return true;
             }
         }
 
         private class RawAnglesProcessor : KeyProcessor
         {
-            public override void updateArm(Collection<Key> keysDown, Collection<Key> keysToggle, Arm arm, float stepAmount)
+            public override bool getNextTarget(ref ComData d, Collection<Key> keysDown, Collection<Key> keysToggle, ArmPose arm, float stepAmount)
             {
                 stepAmount *= CRot;
 
                 if (keysDown.Contains(Key.LeftShift) || keysDown.Contains(Key.RightShift))
                     stepAmount *= -1;
 
-                Angle[] curAngles = arm.getServoAngles();
-                Angle[] nextAngles = new Angle[curAngles.Length];
                 Key[] toCheck = {
-                    Key.D0,
+                    //Key.D0,
                     Key.D1, Key.D2,
                     Key.D3, Key.D4,
                     Key.D5, Key.D6 };
+                Angle[] dAngles = new Angle[toCheck.Length];
+                bool changed = false;
                 for (int i = 0; i < toCheck.Length; i++)
                 {
                     Key k = toCheck[i];
-                    nextAngles[i] = keysDown.Contains(k) ? curAngles[i] + stepAmount : curAngles[i];
+                    if(keysDown.Contains(k))
+                    {
+                        dAngles[i] = stepAmount;
+                        changed = true;
+                    }
+                    else
+                    {
+                        dAngles[i] = 0;
+                    }
                 }
 
                 //Console.WriteLine("raw");
-                arm.setServoAngles(nextAngles);
+                d = changed ? new ComData(dAngles) : d;
+                return changed;
             }
         }
     }

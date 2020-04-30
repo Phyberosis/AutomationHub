@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using AutomationHub.controller;
+using AutomationHub.controllers;
+using AHcoms;
 
 namespace AutomationHub
 {
     public class ControllerFactory
     {
-        public static Controller makeDefaultController(ICom com)
+        public static Controller makeDefaultController(Com com)
         {
             return new ControllerKeyboard(com);
         }

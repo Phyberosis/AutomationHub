@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -13,12 +14,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using AHcoms;
+
 namespace AutomationHub
 {
     public struct VerboseInfo
     {
         public string pos;
         public string dir;
+        public string hUp;
+        public string angles;
         public string msg;
     }
 
@@ -27,16 +32,20 @@ namespace AutomationHub
     /// </summary>
     public partial class MainWindow : Window
     {
-
-
         private Controller controller;
-        private ICom com;
+        private Com com;
+
+        private Log log;
 
         public MainWindow()
         {
             com = ComFactory.getDefaultCom();
             controller = ControllerFactory.makeDefaultController(com);
+
             InitializeComponent();
+
+            //log = Log.getInstance();
+            //log.Show();
         }
 
         private void Click_Control(object sender, RoutedEventArgs e)
@@ -67,13 +76,14 @@ namespace AutomationHub
             {
                 lblArmPos.Content = "Position: " + info.pos;
                 lblArmDir.Content = "Gimbal: " + info.dir;
-                lblMsg.Content = info.msg;
+                lblMsg.Content = info.angles + "\n" + info.msg;
             }));
         }
 
         private void FrmMain_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            controller.ReleaseControl();
+            if (controller != null) controller.ReleaseControl();
+            if (com != null) com.close();
         }
     }
 }

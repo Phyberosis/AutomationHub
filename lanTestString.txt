@@ -1,0 +1,19 @@
+
+{
+  flavour: DATA
+  key: 
+  {
+    value: 453792616788
+  }
+  data: 
+  {
+    dataType: AutomationHub.data.Angle
+    value: 
+    [
+      1
+      2
+      3
+      4
+    ]
+  }
+}

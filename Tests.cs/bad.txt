@@ -1,0 +1,14 @@
+﻿ur: DATA
+  key:
+{
+  "value": 1045375368004
+}
+  data: 
+  {
+    dataType: AutomationHub.data.ComRequest
+    value: 
+    [
+      ANGLES
+    ]
+  }
+}

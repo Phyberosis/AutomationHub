@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AutomationHub
+namespace AHdata
 {
-    public class Angle
+    public class Angle : IJSONable
     {
         private float val;
 
@@ -59,6 +59,16 @@ namespace AutomationHub
         public float toDegrees()
         {
             return ((val * 180f) / (float)Math.PI);
+        }
+
+        public void addToJSON(JSONBuilder jb)
+        {
+            jb.addPrimitive(val.ToString());
+        }
+
+        public void fillFromJSON(JSONDecoder jd)
+        {
+            val = Single.Parse(jd.getPrimitive()[1]);
         }
 
         public static explicit operator float(Angle j) => j.val;
